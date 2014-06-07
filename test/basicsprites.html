@@ -1,0 +1,150 @@
+<!DOCTYPE html> 
+<html> 
+	<head> 
+		<title>jgui - basic sprites</title> 
+		<meta name="viewport" content="width=device-width, initial-scale=1"> 
+		<link rel="stylesheet" href="../css/jgui.css" />
+		<script type="text/javascript" src="../js/lang.js"></script>
+		<script type="text/javascript" src="../js/jgui/object.js"></script>
+		<script type="text/javascript" src="../js/jgui/jgui.js"></script>
+		<script type="text/javascript" src="../js/jgui/dom/dom.js"></script>
+		<script type="text/javascript" src="../js/jgui/display.js"></script>
+		<script type="text/javascript" src="../js/jgui/display/color.js"></script>
+		<script type="text/javascript" src="../js/jgui/display/painter.js"></script>
+		<script type="text/javascript" src="../js/jgui/event.js"></script>
+		<script type="text/javascript" src="../js/jgui/event/event-dispatcher.js"></script>
+		<script type="text/javascript" src="../js/jgui/geometry.js"></script>
+		<script type="text/javascript" src="../js/jgui/geometry/quadtree.js"></script>
+		<script type="text/javascript" src="../js/jgui/geometry/point.js"></script>
+		<script type="text/javascript" src="../js/jgui/geometry/line.js"></script>
+		<script type="text/javascript" src="../js/jgui/geometry/rectangle.js"></script>
+		<script type="text/javascript" src="../js/jgui/geometry/matrix.js"></script>
+		<script type="text/javascript" src="../js/jgui/geometry/transform.js"></script>
+		<script type="text/javascript" src="../js/jgui/geometry/transform-stack.js"></script>
+		<script type="text/javascript" src="../js/jgui/display/element.js"></script>
+		<script type="text/javascript" src="../js/jgui/display/group.js"></script>
+		<script type="text/javascript" src="../js/jgui/display/scene.js"></script>
+		<script type="text/javascript" src="../js/jgui/display/layer.js"></script>
+		<script type="text/javascript" src="../js/jgui/display/sprite.js"></script>
+	</head>
+<body>
+	<div data-role="page">
+		<div data-role="content">	
+			<div id="scene"></div>
+			<div id="panel">
+				<div data-role="fieldcontain">
+					<label for="originx">origin.x:</label>
+					<input type="range" name="slider" id="originx" value="350" min="0" max="700"  />
+				</div>
+				<div data-role="fieldcontain">
+					<label for="originy">origin.y:</label>
+					<input type="range" name="slider" id="originy" value="200" min="0" max="400"  />
+				</div>
+				<div data-role="fieldcontain">
+					<label for="transx">trans.x:</label>
+					<input type="range" name="slider" id="transx" value="350" min="0" max="700"  />
+				</div>
+				<div data-role="fieldcontain">
+					<label for="transy">trans.y:</label>
+					<input type="range" name="slider" id="transy" value="200" min="0" max="400"  />
+				</div>
+				<div data-role="fieldcontain">
+					<label for="rotation">rotation:</label>
+					<input type="range" name="slider" id="rotation" value="0" min="0" max="360"  />
+					<input type="checkbox" name="rotate" id="rotate" />
+				</div>
+				<div data-role="fieldcontain">
+					<label for="scalex">scale.x:</label>
+					<input type="range" name="slider" id="scalex" value="70" min="1" max="200"  />
+				</div>
+				<div data-role="fieldcontain">
+					<label for="scaley">scale.y:</label>
+					<input type="range" name="slider" id="scaley" value="70" min="1" max="200"  />
+				</div>	
+				<div data-role="fieldcontain">
+					<label for="skewx">skew.x:</label>
+					<input type="range" name="slider" id="skewx" value="100" min="1" max="200"  />
+				</div>
+				<div data-role="fieldcontain">
+					<label for="skewy">skew.y:</label>
+					<input type="range" name="slider" id="skewy" value="100" min="1" max="200"  />
+				</div>
+				<div data-role="fieldcontain">
+					<label for="quality">quality:</label>
+					<input type="range" name="slider" id="quality" value="100" min="1" max="100"  />
+				</div>
+			</div>
+		</div>
+	</div>
+	<script language="JavaScript">
+		var scene = new jgui.display.Scene();
+		scene.debug = window.location.href.indexOf("?debug=true") > -1;
+		scene.createLayer('background').setHeight(300);
+		scene.appendTo('scene').setAlpha(0.9);
+		
+		var sprite1 = new jgui.display.Sprite('blue');
+		sprite1.setStyle('background', Colors.blue).setOrigin(50, 50).setLocation(0, 0).setRotation(15);
+		scene.layers.background.add(sprite1);
+
+		var sprite2 = new jgui.display.Sprite('green');
+		sprite2.setStyle('background', Colors.green).setLocation(0, 50).setRotation(-45);
+		scene.layers.background.add(sprite2).setLocation(50, 50);
+		
+		if (true) {
+			scene.duplicateLayer('background', 'foreground');
+			scene.layers.foreground.child('blue').setStyle('background', Colors.orange).setName('orange');
+			scene.layers.foreground.child('green').setStyle('background', Colors.pink).setName('pink').setLocation(10,10).setRotation(45).setAlpha(0.75);
+			scene.layers.foreground.setLocation(150,250).setSkew(1.5, 0.5).setAlpha(0.75);
+
+			scene.duplicateLayer('foreground', 'test');
+			scene.layers.test.child('orange').setStyle('background', Colors.brown).setName('brown').setLocation(0,0);
+			scene.layers.test.child('pink').setStyle('background', Colors.purple).setName('purple');
+			scene.layers.test.setLocation(0,0).setSkew(1, 1).setPosition(50,50).setSize(500,500).setTrails(false);
+
+			var sprite3 = new jgui.display.Sprite('red');
+			sprite3.setStyle('background', Colors.darkred).setLocation(20, 20).setScale(0.5, 2);
+			sprite2.add(sprite3);
+			
+			var sprite4 = sprite3.copy();
+			sprite4.setStyle('background', Colors.lightgreen).setLocation(50, 50).resetScale().setScaleX(0.5).setRotation(30);
+			sprite3.add(sprite4);
+			
+			scene.createLayer('unlinked', false);
+			var sprite5 = new jgui.display.Sprite('cyan');
+			sprite5.setStyle('background', Colors.cyan);
+			scene.layers.unlinked.add(sprite5).setPosition(40,40).setSize(200,200).setAlpha(0.5);
+			var sprite6 = sprite5.copy();
+			sprite6.setRotation(15).move(50,50).setStyle('background', Color.named('cyan').lighten(0.5).toString());
+			scene.layers.unlinked.add(sprite6);
+		}
+		
+		function getVal(id) { return parseFloat(document.getElementById(id).value); };
+		function setVal(id, value) { document.getElementById(id).value = value; };
+		
+		var test = {
+			'update': function() {
+				scene.setOrigin(getVal('originx'), getVal('originy'));
+				scene.setLocation(getVal('transx'), getVal('transy'));
+				scene.setRotation(getVal('rotation'));
+				scene.setScale(getVal('scalex') / 100, getVal('scaley') / 100);
+				scene.setSkew(getVal('skewx') / 100, getVal('skewy') / 100);
+				scene.layers.background.setQuality(getVal('quality') / 100);
+				scene.layers.background.rotate(1);
+				if (scene.layers.foreground) {
+					sprite1.rotate(1);
+					sprite2.rotate(2);
+					scene.layers.foreground.rotate(0.5);
+					scene.layers.foreground.children[1].rotate(2);
+					sprite3.rotate(1);	
+				}
+				if (document.getElementById('rotate').checked) setVal('rotation', (getVal('rotation') + 1) % 360);
+				//setVal('rotation', 15);
+			}
+		}
+		
+		test.update();
+		scene.addEvent("enterframe", test.update);
+		scene.start();
+	</script>
+</body>
+</html>
